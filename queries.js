@@ -13,6 +13,8 @@ const updateUserByIdPart2 = ' WHERE customer_id = $1';
 
 const selectAllServices = `SELECT * FROM services`;
 
+const getServiceById = `SELECT * FROM services WHERE service_id = $1`;
+
 module.exports = {
     createCustomer,
     checkUserAuth,
@@ -20,5 +22,6 @@ module.exports = {
     getUserById,
     updateUserByIdPart1,
     updateUserByIdPart2,
-    selectAllServices
+    selectAllServices,
+    getServiceById
 }

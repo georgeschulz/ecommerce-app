@@ -8,6 +8,15 @@ const getAllServices = (req, res) => {
     })
 }
 
+const getServiceById = (req, res) => {
+    const id = req.params.id;
+    db.query(queries.getServiceById, [id], (err, results) => {
+        if(err) throw err;
+        res.send(results.rows);
+    });
+}
+
 module.exports = {
-    getAllServices
+    getAllServices,
+    getServiceById
 }
