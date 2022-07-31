@@ -2,6 +2,7 @@ require('dotenv').config(); //this adds in the envirornment variables
 const express = require('express');
 const app = express();
 const port = process.env.PORT;
+//routers
 const registerRouter = require('./routes/auth').registerRouter;
 const loginRouter = require('./routes/auth').loginRouter;
 const usersRouter = require('./routes/users');

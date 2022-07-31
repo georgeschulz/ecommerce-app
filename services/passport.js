@@ -10,7 +10,7 @@ passport.use(new LocalStrategy(function verify(username, password, cb) {
     db.query(queries.checkUserAuth, [username], function (err, result) {
         //handle errors and mismatches
         if(err) return cb(err) 
-        if(!result) return cb(null, false, { message: 'Incorrect username or password'}) 
+        if(result.rows.length <= 0) return cb(null, false, { message: 'Incorrect username or password'}) 
         //if it passes the checks to make sure the customer exists, check the password
         bcrypt.compare(password, result.rows[0].password, function (err, check) {
             if(err) {

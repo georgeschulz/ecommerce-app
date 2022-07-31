@@ -56,21 +56,26 @@ const addServiceToCart = (req, res) => {
     }
 }
 
+//Controller to return the cart contents of a specific user joined with more information about the service
 const getCartContents = (req, res) => {
     const { customer_id } = req.params;
     db.query(queries.getUserCart, [customer_id], (err, results) => {
         if (err) {
             res.status(404).send('Error performing request. Please try again')
         } else if (results.rows.length <= 0) {
+            //return an empty array if the customer_id had no corresponding contents
             res.status(404).send([])
         } else {
+            //send back the results if successful
             res.status(200).send(results.rows)
         }
     })
 }
 
+//controller to delte a specific cart item by the item's id
 const deleteCartItem = (req, res) => {
     const { cart_id } = req.params;
+    //query and handle results
     db.query(queries.deleteCartItem, [cart_id], (err, result) => {
         if (err) {
             res.status(404).send('Error removing item from cart');
@@ -80,6 +85,7 @@ const deleteCartItem = (req, res) => {
     })
 }
 
+//controller to clear the cart of all contents for a specific user
 const clearCart = (req, res) => {
     const { customer_id } = req.params;
     db.query(queries.clearCart, [customer_id], (err, result) => {
@@ -95,9 +101,10 @@ const checkout = (req, res) => {
     //get the customer's information
     const { customer_id } = req.params;
     const { date_scheduled } = req.body;
-    let authorized = true;
+    let authorized = true; //dummy value while we are not processing real payments
 
-    if (authorized) {
+    if (authorized) { //check to make sure they have paid
+        //once authorized, get the customer data so that we can create an order with the correct address
         db.query(queries.getUserById, [customer_id], (err, customerResults) => {
             if (err) {
                 res.status(404).send('Error finding user.')
@@ -108,12 +115,15 @@ const checkout = (req, res) => {
                     if (err) {
                         res.status(404).send('Error finding user cart')
                     } else if (cartResults.rows.length <= 0) {
+                        //if the cart is empty, send an error status 
                         res.status(404).send('Error: Query returned an empty cart')
                     } else {
                         //add each cart item as an order
                         let cart = cartResults.rows;
+                        //get today's date and format it to timestamp the order
                         const today = new Date();
                         const dateCreatedString = today.toISOString().split('T')[0];
+                        //iterate over the contents of the cart to create a service order for each content of the cart
                         cart.forEach(item => {
                             db.query(queries.createOrder,
                                 [item.service_id, dateCreatedString, date_scheduled, item.price, customer.address, customer.city, customer.state_abbreviation, customer.zip, customer.first_name, customer.last_name],
@@ -121,7 +131,7 @@ const checkout = (req, res) => {
                                     if (err) {
                                         res.status(404).send('Error creating order')
                                     } else {
-                                        //clear the cart
+                                        //clear the cart once we've confirmed at the ordres have been created
                                         db.query(queries.clearCart, [customer_id], (err, result) => {
                                             if (err) {
                                                 res.status(404).send('Error clearing cart')

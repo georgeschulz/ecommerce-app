@@ -19,7 +19,7 @@ const registerUser = async (req, response) => {
         //log any errors in console
         if(err) {
             console.log(err);
-            res.status(500).send(err);
+            res.status(401).send(err);
         } else {
             //send back the user's information
             response.status(201).send('User successfully created');
