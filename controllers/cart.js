@@ -21,7 +21,7 @@ const addServiceToCart = (req, res) => {
                 res.status(404).send('Error: ' + err)
             } else if (!customerResult.rows.length > 0) { //No results returned because there was no user with that ID
                 res.status(404).send('Error: No customer exists with this ID.')
-            } else { 
+            } else {
                 const squareFeet = customerResult.rows[0].square_feet; //pull square feet from the resulting query
                 //query the services table and find the matching tier and service level for user submitted info
                 db.query(serviceParameterQuery, [service_id], (err, serviceResult) => {
@@ -59,9 +59,9 @@ const addServiceToCart = (req, res) => {
 const getCartContents = (req, res) => {
     const { customer_id } = req.params;
     db.query(queries.getUserCart, [customer_id], (err, results) => {
-        if(err) {
+        if (err) {
             res.status(404).send('Error performing request. Please try again')
-        } else if(results.rows.length <= 0) {
+        } else if (results.rows.length <= 0) {
             res.status(404).send([])
         } else {
             res.status(200).send(results.rows)
@@ -72,7 +72,7 @@ const getCartContents = (req, res) => {
 const deleteCartItem = (req, res) => {
     const { cart_id } = req.params;
     db.query(queries.deleteCartItem, [cart_id], (err, result) => {
-        if(err) {
+        if (err) {
             res.status(404).send('Error removing item from cart');
         } else {
             res.status(204).send('Cart with id ' + cart_id + ' deleted');
@@ -83,7 +83,7 @@ const deleteCartItem = (req, res) => {
 const clearCart = (req, res) => {
     const { customer_id } = req.params;
     db.query(queries.clearCart, [customer_id], (err, result) => {
-        if(err) {
+        if (err) {
             res.status(404).send(err);
         } else {
             res.status(200).send('Cart successfully cleared');
@@ -91,9 +91,58 @@ const clearCart = (req, res) => {
     })
 }
 
+const checkout = (req, res) => {
+    //get the customer's information
+    const { customer_id } = req.params;
+    const { date_scheduled } = req.body;
+    let authorized = true;
+
+    if (authorized) {
+        db.query(queries.getUserById, [customer_id], (err, customerResults) => {
+            if (err) {
+                res.status(404).send('Error finding user.')
+            } else {
+                let customer = customerResults.rows[0];
+                //Get data from cart for the user
+                db.query(queries.getUserCart, [customer_id], (err, cartResults) => {
+                    if (err) {
+                        res.status(404).send('Error finding user cart')
+                    } else if (cartResults.rows.length <= 0) {
+                        res.status(404).send('Error: Query returned an empty cart')
+                    } else {
+                        //add each cart item as an order
+                        let cart = cartResults.rows;
+                        const today = new Date();
+                        const dateCreatedString = today.toISOString().split('T')[0];
+                        cart.forEach(item => {
+                            db.query(queries.createOrder,
+                                [item.service_id, dateCreatedString, date_scheduled, item.price, customer.address, customer.city, customer.state_abbreviation, customer.zip, customer.first_name, customer.last_name],
+                                (err, result) => {
+                                    if (err) {
+                                        res.status(404).send('Error creating order')
+                                    } else {
+                                        //clear the cart
+                                        db.query(queries.clearCart, [customer_id], (err, result) => {
+                                            if (err) {
+                                                res.status(404).send('Error clearing cart')
+                                            } else {
+                                                res.status(201).send('Order succesfully placed');
+                                            }
+                                        })
+                                    }
+                                })
+                        })
+                    }
+                })
+            }
+        })
+    }
+}
+
 module.exports = {
     addServiceToCart,
     getCartContents,
     deleteCartItem,
-    clearCart
+    clearCart,
+    checkout
 }

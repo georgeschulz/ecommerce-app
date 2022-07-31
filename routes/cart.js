@@ -6,5 +6,6 @@ router.post('/:customer_id/service/:service_id', controllers.addServiceToCart);
 router.get('/:customer_id', controllers.getCartContents);
 router.delete('/:cart_id', controllers.deleteCartItem);
 router.delete('/clear/:customer_id', controllers.clearCart);
+router.post('/:customer_id/checkout', controllers.checkout);
 
 module.exports = router;
