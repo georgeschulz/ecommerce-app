@@ -93,6 +93,10 @@ const createOrder = `
     ($1, $2, 4, false, $3, $4, $5, $6, $7, $8, $9, $10);
 `
 
+const getAllOrders = `SELECT * FROM orders`;
+
+const getOrderById = `SELECT * FROM orders WHERE order_id = $1`;
+
 module.exports = {
     createCustomer,
     checkUserAuth,
@@ -109,5 +113,7 @@ module.exports = {
     getUserCart,
     deleteCartItem,
     clearCart,
-    createOrder
+    createOrder,
+    getAllOrders,
+    getOrderById
 }
