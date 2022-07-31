@@ -56,6 +56,44 @@ const addServiceToCart = (req, res) => {
     }
 }
 
+const getCartContents = (req, res) => {
+    const { customer_id } = req.params;
+    db.query(queries.getUserCart, [customer_id], (err, results) => {
+        if(err) {
+            res.status(404).send('Error performing request. Please try again')
+        } else if(results.rows.length <= 0) {
+            res.status(404).send([])
+        } else {
+            res.status(200).send(results.rows)
+        }
+    })
+}
+
+const deleteCartItem = (req, res) => {
+    const { cart_id } = req.params;
+    db.query(queries.deleteCartItem, [cart_id], (err, result) => {
+        if(err) {
+            res.status(404).send('Error removing item from cart');
+        } else {
+            res.status(204).send('Cart with id ' + cart_id + ' deleted');
+        }
+    })
+}
+
+const clearCart = (req, res) => {
+    const { customer_id } = req.params;
+    db.query(queries.clearCart, [customer_id], (err, result) => {
+        if(err) {
+            res.status(404).send(err);
+        } else {
+            res.status(200).send('Cart successfully cleared');
+        }
+    })
+}
+
 module.exports = {
-    addServiceToCart
+    addServiceToCart,
+    getCartContents,
+    deleteCartItem,
+    clearCart
 }
