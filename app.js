@@ -4,6 +4,7 @@ const app = express();
 const port = process.env.PORT;
 const registerRouter = require('./routes/auth').registerRouter;
 const loginRouter = require('./routes/auth').loginRouter;
+const usersRouter = require('./routes/users');
 const passport = require('passport'); //passport library to initialize it
 const session = require('express-session'); //creates a session
 require('./services/passport'); //passport configuration that allows passport to lookup information in db and compare it to user submissions
@@ -30,6 +31,7 @@ app.use(passport.session());
 //add routes as middleware
 app.use('/register', registerRouter);
 app.use('/login', loginRouter);
+app.use('/users', usersRouter);
 
 //auth testing route to represent reaching account after success in auth
 app.get('/account', (req, res) => {

@@ -4,7 +4,19 @@ const createCustomer = `
 
 const checkUserAuth = `SELECT * FROM customers WHERE email = $1`;
 
+const getUsers = `SELECT * FROM customers`;
+
+const getUserById = `SELECT * FROM customers WHERE customer_id = $1`;
+
+const updateUserByIdPart1 = 'UPDATE customers SET ';
+const updateUserByIdPart2 = ' WHERE customer_id = $1';
+
 module.exports = {
     createCustomer,
-    checkUserAuth
+    checkUserAuth,
+    getUsers,
+    getUserById,
+    updateUserByIdPart1,
+    updateUserByIdPart2,
+    findEmails
 }
