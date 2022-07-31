@@ -6,6 +6,7 @@ const registerRouter = require('./routes/auth').registerRouter;
 const loginRouter = require('./routes/auth').loginRouter;
 const usersRouter = require('./routes/users');
 const servicesRouter = require('./routes/services');
+const cartRouter = require('./routes/cart')
 const passport = require('passport'); //passport library to initialize it
 const session = require('express-session'); //creates a session
 require('./services/passport'); //passport configuration that allows passport to lookup information in db and compare it to user submissions
@@ -34,6 +35,7 @@ app.use('/register', registerRouter);
 app.use('/login', loginRouter);
 app.use('/users', usersRouter);
 app.use('/services', servicesRouter);
+app.use('/cart', cartRouter);
 
 //auth testing route to represent reaching account after success in auth
 app.get('/account', (req, res) => {
