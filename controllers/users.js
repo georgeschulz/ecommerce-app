@@ -1,6 +1,5 @@
 const queries = require('../queries');
 const db = require('../db');
-const checkIfEmailExists = require('../helpers/checkIfEmailExists')
 
 const getUsers = (req, res) => {
     db.query(queries.getUsers, (err, results) => {
