@@ -1,0 +1,713 @@
+openapi: 3.0.1
+info:
+  title: Ecommerce store API
+  version: 1.0.0
+  description: >-
+    A set of internal APIs for interfacing with my demo pest control ecommerce
+    page
+paths:
+  /register:
+    summary: An endpoint to create a new customer
+    description: >-
+      A registration endpoint used to create a new customer in the database for
+      authentication
+    post:
+      summary: Create a new user
+      description: Creates a new user by posting to the customers table
+      operationId: post_register
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                address:
+                  type: string
+                city:
+                  type: string
+                zip:
+                  type: string
+                email:
+                  type: string
+                phone:
+                  type: string
+                password:
+                  type: string
+                squareFeet:
+                  type: string
+      responses:
+        '201':
+          description: Successful creation of a user
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Successful creation of user:
+                  value: User successfully created
+        '401':
+          description: Request failed to create a new user
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Failure to create a uesr:
+                  value: 'Error: Could not create user'
+        default:
+          description: Default error sample response
+  /login:
+    summary: 'Authenticate and authorize the user '
+    description: >-
+      Checks to make sure the customer has registered and authorizes them to
+      place orders
+    post:
+      summary: Authorize the user
+      description: Post the login information from the login form to authorize the user
+      operationId: post_login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Successful login
+          content:
+            text/plain; application/json:
+              examples:
+                Successfully authorized:
+                  value: |-
+                    {
+                        "customerID": 7
+                    }
+        default:
+          description: Default error sample response
+  /users:
+    summary: Access information about the users
+    description: Retrieves information regarding the users profile and ids
+    get:
+      summary: Get information about users
+      description: >-
+        An endpoint for accessing detailed information about users, not
+        including sensitive issues like raw passwords
+      operationId: get_users
+      responses:
+        '200':
+          description: Successful retrieval of user data
+          content:
+            application/json:
+              examples:
+                Successful return of sample user data:
+                  value: |-
+                    [
+                        {
+                            "customer_id": 7,
+                            "first_name": "G",
+                            "last_name": "Schulz",
+                            "address": "4355 Penwood Drive",
+                            "city": "Alexandria",
+                            "state_abbreviation": "VA",
+                            "zip": "22310",
+                            "email": "georgeschulz33@gmail.com",
+                            "phone": "5714319531",
+                            "date_created": "2022-07-30T04:00:00.000Z",
+                            "password": "$2b$10$qw4dK3BU9riJJCy5uBY.tewZFgSD.6ZubGK9kX4Eaf9HUZND3dNUu",
+                            "square_feet": 2800
+                        },
+                        {
+                            "customer_id": 4,
+                            "first_name": "John",
+                            "last_name": "Smith",
+                            "address": "4301 Nickleback drive",
+                            "city": "Oxon Hill",
+                            "state_abbreviation": "MD",
+                            "zip": "22981",
+                            "email": "tyler.smith@gmail.com",
+                            "phone": "801-493-3491",
+                            "date_created": "2022-07-30T04:00:00.000Z",
+                            "password": "$2b$10$RqBqDcXcZvijx3TR5qkYreAUSqb41fb34vDdjq355odPlaHnHrsAa",
+                            "square_feet": 3810
+                        }
+                    ]
+        default:
+          description: Default error sample response
+  /users/{customer_id}:
+    summary: Retrieve a user by their customer ID
+    description: Retrieves detailed information about a user by their customer ID
+    get:
+      summary: Get information about the user by ID
+      description: >-
+        An endpoint to access specific information about a specific user
+        identified by ID
+      operationId: get_user_by_id
+      responses:
+        '200':
+          description: >-
+            Successfully finds the user by their ID and sends the value as an
+            object.
+          content:
+            application/json:
+              examples:
+                Successfully returns a user:
+                  value: |-
+                    [
+                        {
+                            "customer_id": 7,
+                            "first_name": "G",
+                            "last_name": "Schulz",
+                            "address": "4355 Penwood Drive",
+                            "city": "Alexandria",
+                            "state_abbreviation": "VA",
+                            "zip": "22310",
+                            "email": "georgeschulz33@gmail.com",
+                            "phone": "5714319531",
+                            "date_created": "2022-07-30T04:00:00.000Z",
+                            "password": "$2b$10$qw4dK3BU9riJJCy5uBY.tewZFgSD.6ZubGK9kX4Eaf9HUZND3dNUu",
+                            "square_feet": 2800
+                        }
+                    ]
+        '404':
+          description: There was no user found for the ID provided as a parameter
+          content:
+            application/json:
+              examples:
+                No user found with provided customer_id:
+                  value: []
+      parameters:
+        - name: customer_id
+          in: path
+          description: the customer ID in the customers table
+          required: true
+          schema:
+            type: string
+    put:
+      summary: Update the user's information
+      description: >-
+        Update the customer information after they have registered with PUT call
+        to the customer table. All emails must be unique.
+      operationId: put_users
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                address:
+                  type: string
+                city:
+                  type: string
+                zip:
+                  type: string
+                email:
+                  type: string
+                phone:
+                  type: string
+                squareFeet:
+                  type: string
+      responses:
+        '204':
+          description: Successful update of the customers user data
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Resource successfully updated:
+                  value: Resource succesfully updated.
+        '404':
+          description: Unsuccesful update
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Duplicate email constraint violated:
+                  value: Email already exists
+                General error with update:
+                  value: Error updating the values
+        default:
+          description: Default error sample response
+      parameters:
+        - name: customer_id
+          in: path
+          description: the customer ID in the customers table
+          required: true
+          schema:
+            type: string
+  /orders:
+    summary: Get a list of all of the orders processed by the store
+    description: 'An endpoint to read, create and remove orders '
+    get:
+      summary: Get orders that have been placed
+      description: Retrieve orders and information about orders
+      operationId: get_orders
+      responses:
+        '200':
+          description: Successful query of order data
+          content:
+            application/json:
+              examples:
+                Successful return of sample orders:
+                  value: |-
+                    [
+                        {
+                            "order_id": 7,
+                            "date_created": "2022-07-31T04:00:00.000Z",
+                            "customer_id": 4,
+                            "complete": false,
+                            "date_scheduled": "2022-09-01T04:00:00.000Z",
+                            "price": "103.69",
+                            "service_id": 1,
+                            "address": "4301 Nickleback drive",
+                            "city": "Oxon Hill",
+                            "state": "MD",
+                            "zip": "22981",
+                            "first_name": "John",
+                            "last_name": "Smith"
+                        },
+                        {
+                            "order_id": 8,
+                            "date_created": "2022-07-31T04:00:00.000Z",
+                            "customer_id": 4,
+                            "complete": false,
+                            "date_scheduled": "2022-09-01T04:00:00.000Z",
+                            "price": "102.38",
+                            "service_id": 2,
+                            "address": "4301 Nickleback drive",
+                            "city": "Oxon Hill",
+                            "state": "MD",
+                            "zip": "22981",
+                            "first_name": "John",
+                            "last_name": "Smith"
+                        },
+                        {
+                            "order_id": 9,
+                            "date_created": "2022-07-31T04:00:00.000Z",
+                            "customer_id": 4,
+                            "complete": false,
+                            "date_scheduled": "2022-09-01T04:00:00.000Z",
+                            "price": "103.69",
+                            "service_id": 1,
+                            "address": "4301 Nickleback drive",
+                            "city": "Oxon Hill",
+                            "state": "MD",
+                            "zip": "22981",
+                            "first_name": "John",
+                            "last_name": "Smith"
+                        },
+                        {
+                            "order_id": 10,
+                            "date_created": "2022-07-31T04:00:00.000Z",
+                            "customer_id": 4,
+                            "complete": false,
+                            "date_scheduled": "2022-09-01T04:00:00.000Z",
+                            "price": "102.38",
+                            "service_id": 2,
+                            "address": "4301 Nickleback drive",
+                            "city": "Oxon Hill",
+                            "state": "MD",
+                            "zip": "22981",
+                            "first_name": "John",
+                            "last_name": "Smith"
+                        }
+                    ]
+        '404':
+          description: Error retrieving resource
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Error retrieving orders:
+                  value: Error retrieving orders
+        default:
+          description: Default error sample response
+  /orders/{order_id}:
+    summary: Get order information by order ID
+    description: Get order information by ID
+    get:
+      summary: Get an order by the order_id
+      description: >-
+        Retrieve the details of an order by it's ID, including information like
+        the date it was created, when it was scheduled, the type of service and
+        it's price
+      operationId: get_order_by_id
+      responses:
+        '200':
+          description: Successful query
+          content:
+            application/json:
+              examples:
+                Successful retrieval of order:
+                  value: |-
+                    {
+                        "order_id": 8,
+                        "date_created": "2022-07-31T04:00:00.000Z",
+                        "customer_id": 4,
+                        "complete": false,
+                        "date_scheduled": "2022-09-01T04:00:00.000Z",
+                        "price": "102.38",
+                        "service_id": 2,
+                        "address": "4301 Nickleback drive",
+                        "city": "Oxon Hill",
+                        "state": "MD",
+                        "zip": "22981",
+                        "first_name": "John",
+                        "last_name": "Smith"
+                    }
+        '404':
+          description: Failed to find the order
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Could not find order_id:
+                  value: No orders found with this ID
+      parameters:
+        - name: order_id
+          in: path
+          description: the id of the order in the orders table (order_id)
+          required: true
+          schema:
+            type: string
+  /services:
+    summary: An endpoint to access services categorized by issue
+    description: Retrieve services and related information based on the target pest
+    get:
+      summary: Retrieve services that address a target
+      description: >-
+        Based on the target pest, this retrieves a list of services including
+        pricing parameters, frequency, billing terms and other factors for each
+        service that fits the category.
+      operationId: get_services_by_target
+      responses:
+        '200':
+          description: Succesful query
+          content:
+            application/json:
+              examples:
+                Return all services:
+                  value: |-
+                    [
+                        {
+                            "service_id": 1,
+                            "service_name": "All in One",
+                            "price_per_square_foot": "0.005",
+                            "billing_type": "monthly",
+                            "tier_multiplier": "1.05",
+                            "services_per_year": 6,
+                            "base_price": "75",
+                            "setup_fee": "150"
+                        },
+                        {
+                            "service_id": 7,
+                            "service_name": "Sentricon Termite Baiting System",
+                            "price_per_square_foot": "0.005",
+                            "billing_type": "annual",
+                            "tier_multiplier": "1.2",
+                            "services_per_year": 4,
+                            "base_price": "300",
+                            "setup_fee": "750"
+                        },
+                        {
+                            "service_id": 6,
+                            "service_name": "Basic Annual Termite Renewal",
+                            "price_per_square_foot": "0.005",
+                            "billing_type": "annual",
+                            "tier_multiplier": "1.2",
+                            "services_per_year": 1,
+                            "base_price": "100",
+                            "setup_fee": "0"
+                        },
+                        {
+                            "service_id": 5,
+                            "service_name": "IN2Care Green Mosquito Care",
+                            "price_per_square_foot": "0.009",
+                            "billing_type": "monthly",
+                            "tier_multiplier": "1.08",
+                            "services_per_year": 7,
+                            "base_price": "75",
+                            "setup_fee": "150"
+                        },
+                        {
+                            "service_id": 4,
+                            "service_name": "LawnShield",
+                            "price_per_square_foot": "0.009",
+                            "billing_type": "monthly",
+                            "tier_multiplier": "1.08",
+                            "services_per_year": 9,
+                            "base_price": "75",
+                            "setup_fee": "75"
+                        },
+                        {
+                            "service_id": 3,
+                            "service_name": "Quarterly Pest Service",
+                            "price_per_square_foot": "0.007",
+                            "billing_type": "monthly",
+                            "tier_multiplier": "1.05",
+                            "services_per_year": 6,
+                            "base_price": "80",
+                            "setup_fee": "150"
+                        },
+                        {
+                            "service_id": 2,
+                            "service_name": "Castle",
+                            "price_per_square_foot": "0.006",
+                            "billing_type": "monthly",
+                            "tier_multiplier": "1.05",
+                            "services_per_year": 6,
+                            "base_price": "70",
+                            "setup_fee": "125"
+                        }
+                    ]
+      parameters:
+        - name: pest_name
+          in: query
+          description: the target_id which corresponds to the pest name lowercase
+          required: false
+          schema:
+            type: string
+  /services/{service_id}:
+    summary: Access information about a specific service
+    description: >-
+      An endpoint to access details about the specific service by ID and to
+      retrieve parameters to price it properly.
+    get:
+      summary: Get information about a service by ID
+      description: >-
+        Retrieve information about pricing parameters, name of the service and
+        specific target IDs. 
+      operationId: get_services
+      responses:
+        '200':
+          description: Query successful
+          content:
+            application/json:
+              examples:
+                Returned service success:
+                  value: |-
+                    [
+                        {
+                            "service_id": 1,
+                            "service_name": "All in One",
+                            "price_per_square_foot": "0.005",
+                            "billing_type": "monthly",
+                            "tier_multiplier": "1.05",
+                            "services_per_year": 6,
+                            "base_price": "75",
+                            "setup_fee": "150"
+                        }
+                    ]
+      parameters:
+        - name: service_id
+          in: path
+          description: the id of the service
+          required: true
+          schema:
+            type: string
+  /cart/{customer_id}/service/{service_id}:
+    summary: Post a specific service to the cart
+    description: Add a service to the cart for checkout
+    post:
+      summary: Add a service to the user's cart
+      description: Add a service to the cart based on the customer_id and the service_id
+      operationId: post_cart_by_id
+      parameters:
+        - name: customer_id
+          in: path
+          description: the customer id in the customer table
+          required: true
+          schema:
+            type: string
+        - name: service_id
+          in: path
+          description: the id of the service in the services table
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                target:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: Successfully added service
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Service added to cart:
+                  value: All in One added to the cart of customer 4
+        '404':
+          description: Could not add service
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                No valid targets:
+                  value: >-
+                    Please include a body for your request with a property,
+                    target, containing a list of string names of pests
+                No valid customer:
+                  value: 'Error: No customer exists with this ID.'
+                No valid pest for service id:
+                  value: >-
+                    Error: No service available for the submitted pest and
+                    service ID combination
+  /cart/{customer_id}/checkout:
+    summary: Go to checkout
+    description: Validate payment, ensure cart has contents and prepare order
+    post:
+      summary: Add the information to checkout
+      description: >-
+        Add the information to checkout by validating payment information, cart
+        contents and placing orders
+      operationId: post_checkout
+      responses:
+        '201':
+          description: Checkout success
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Order placed:
+                  value: Order succesfully placed
+        '404':
+          description: Checkout failure
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Could not find user:
+                  value: Error finding user.
+                Could not find cart:
+                  value: Error finding user cart.
+                Empty Cart:
+                  value: 'Error: Query returned an empty cart'
+                Could not create order:
+                  value: Error creating order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                date_scheduled:
+                  type: string
+      parameters:
+        - name: customer_id
+          in: path
+          description: the customer id in the customer table
+          required: true
+          schema:
+            type: string
+  /cart/{customer_id}:
+    summary: Get the cart contents for a user
+    get:
+      summary: Get the user's cart
+      description: >-
+        Retrieve the user's cart and join it with services data using the
+        customer_id
+      operationId: get_cart
+      responses:
+        '200':
+          description: Successful query
+          content:
+            application/json:
+              examples:
+                Successful cart retrieval:
+                  value: |-
+                    [
+                        {
+                            "cart_id": 31,
+                            "customer_id": 7,
+                            "service_id": 2,
+                            "service_name": "Castle",
+                            "billing_type": "monthly",
+                            "services_per_year": 6,
+                            "price": "86.8"
+                        },
+                        {
+                            "cart_id": 23,
+                            "customer_id": 7,
+                            "service_id": 2,
+                            "service_name": "Castle",
+                            "billing_type": "monthly",
+                            "services_per_year": 6,
+                            "price": "86.8"
+                        }
+                    ]
+        '404':
+          description: Unsuccesful query
+          content:
+            application/json:
+              examples:
+                Cart could not be found or is empty:
+                  value: '[]'
+        default:
+          description: Default error sample response
+      parameters:
+        - name: customer_id
+          in: path
+          description: the customer id in the customer table
+          required: true
+          schema:
+            type: string
+  /cart/clear/{customer_id}:
+    summary: Clear a customer's cart
+    delete:
+      summary: Clear a customer's cart
+      description: >-
+        Clear every record with customer's id in cart table, resulting in an
+        empty cart
+      operationId: delete_clear_cart
+      responses:
+        '200':
+          description: Successful query
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Clear success:
+                  value: Cart successfully cleared
+        default:
+          description: Default error sample response
+      parameters:
+        - name: customer_id
+          in: path
+          description: the customer id in the customer table
+          required: true
+          schema:
+            type: string
+  /cart/{cart_id}:
+    summary: Delete an item from the cart
+    delete:
+      summary: Delete an item from the cart
+      description: Delete a specific item from the user's cart by the user's id
+      operationId: delete_cart
+      responses:
+        '204':
+          description: 'Successful deletion'
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Successful deletion:
+                  value: Cart with id 1 deleted
+        default:
+          description: Default error sample response
+      parameters:
+        - name: cart_id
+          in: path
+          description: the cart id in the cart table
+          required: true
+          schema:
+            type: string

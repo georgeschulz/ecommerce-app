@@ -46,7 +46,7 @@ const addServiceToCart = (req, res) => {
                             if (err) {
                                 res.status(404).send('Error adding the service to the cart')
                             } else {
-                                res.status(200).send({ msg: `${serviceName} added to the cart of customer ${customer_id}`, data: { serviceName, customer_id, service_id, pricePerSquareFeet, setup, base, multiplier, tier, price } })
+                                res.status(200).send(`${serviceName} added to the cart of customer ${customer_id}`)
                             }
                         })
                     }

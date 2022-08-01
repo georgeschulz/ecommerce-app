@@ -16,7 +16,7 @@ const getUserById = (req, res) => {
         if(err) {
             res.status(404).send('Could not find user');
         } else if (results.rows.length <= 0) {
-            res.status(404).send('Error: No user was found with the ID'); //send an error when no customers are found for that ID
+            res.status(404).send([]); //send an error when no customers are found for that ID
         } else {
             res.send(results.rows);
         }
@@ -48,10 +48,10 @@ const updateUserById = async (req, res, next) => {
             if(err.constraint == 'unique_email') {
                 res.status(404).send('Email already exists')
             } else {
-                res.status(400).send('Error updating the values')
+                res.status(404).send('Error updating the values')
             }
         } else {
-            res.send(`Resource succesfully updated.`);
+            res.status(204).send(`Resource succesfully updated.`);
         }
     })
 }
